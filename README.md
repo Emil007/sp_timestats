@@ -9,7 +9,6 @@ A bunch of scripts i cubbled together with big help from chatgpt - pulls als pok
 **sendstats.py** - sends stats to database, needs table timestats:
 
 **stats.py** - runs all of them in order for cronjob
-
 ```
 CREATE TABLE IF NOT EXISTS `timestats` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -22,6 +21,7 @@ CREATE TABLE IF NOT EXISTS `timestats` (
   `s10` int(11), `s9` int(11), `s8` int(11), `s7` int(11), `s6` int(11), `s5` int(11), `s4` int(11), `s3` int(11), `s2` int(11), `s1` int(11), `s0` int(11),
   PRIMARY KEY (`id`)
 );
+```
 
 can then be used in grafana with something like
 
