@@ -1,9 +1,14 @@
 # sp_timestats
 A bunch of scripts i cubbled together with big help from chatgpt - pulls als pokemon from rdm db, analyzes their time between seen and despawn time (for now) and writes that to DB for grafana
 
-pullstats.py - pulls all pokemon from db and saves them locally to pkmn.db. Marks as pokemon pulled as checked (needs column "checked" in pokemon table)
-analyze.py - analyzes time between despawn and first_seen, writes findings to stats.db and moves analyzed entries to archive.db
-sendstats.py - sends stats to database, needs table timestats:
+
+**pullstats.py** - pulls all pokemon from db and saves them locally to pkmn.db. Marks as pokemon pulled as checked (needs column "checked" in pokemon table)
+
+**analyze.py** - analyzes time between despawn and first_seen, writes findings to stats.db and moves analyzed entries to archive.db
+
+**sendstats.py** - sends stats to database, needs table timestats:
+
+**stats.py** - runs all of them in order for cronjob
 
 ```
 CREATE TABLE IF NOT EXISTS `timestats` (
@@ -17,3 +22,14 @@ CREATE TABLE IF NOT EXISTS `timestats` (
   `s10` int(11), `s9` int(11), `s8` int(11), `s7` int(11), `s6` int(11), `s5` int(11), `s4` int(11), `s3` int(11), `s2` int(11), `s1` int(11), `s0` int(11),
   PRIMARY KEY (`id`)
 );
+
+can then be used in grafana with something like
+
+```
+SELECT
+    time,
+    ROUND(((s29 + s28 + s27 + s26) / (s29 + s28 + s27 + s26 + s25 + s24 + s23 + s22 + s21 + s20 + s19 + s18 + s17 + s16 + s15 + s14 + s13 + s12 + s11 + s10 + s9 + s8 + s7 + s6 + s5 + s4 + s3 + s2 + s1 + s0)) * 100, 2) AS "OK",
+    ROUND(((s25 + s24 + s23 + s22 + s21 + s20) / (s29 + s28 + s27 + s26 + s25 + s24 + s23 + s22 + s21 + s20 + s19 + s18 + s17 + s16 + s15 + s14 + s13 + s12 + s11 + s10 + s9 + s8 + s7 + s6 + s5 + s4 + s3 + s2 + s1 + s0)) * 100, 2) AS "pass",
+    ROUND(((s19 + s18 + s17 + s16 + s15 + s14 + s13 + s12 + s11 + s10) / (s29 + s28 + s27 + s26 + s25 + s24 + s23 + s22 + s21 + s20 + s19 + s18 + s17 + s16 + s15 + s14 + s13 + s12 + s11 + s10 + s9 + s8 + s7 + s6 + s5 + s4 + s3 + s2 + s1 + s0)) * 100, 2) AS "bad",
+    ROUND(((s9 + s8 + s7 + s6 + s5 + s4 + s3 + s2 + s1 + s0) / (s29 + s28 + s27 + s26 + s25 + s24 + s23 + s22 + s21 + s20 + s19 + s18 + s17 + s16 + s15 + s14 + s13 + s12 + s11 + s10 + s9 + s8 + s7 + s6 + s5 + s4 + s3 + s2 + s1 + s0)) * 100, 2) AS "fail"
+FROM timestats
