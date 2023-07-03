@@ -5,7 +5,8 @@ pullstats.py - pulls all pokemon from db and saves them locally to pkmn.db. Mark
 analyze.py - analyzes time between despawn and first_seen, writes findings to stats.db and moves analyzed entries to archive.db
 sendstats.py - sends stats to database, needs table timestats:
 
-```CREATE TABLE IF NOT EXISTS `timestats` (
+```
+CREATE TABLE IF NOT EXISTS `timestats` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `time` datetime NOT NULL DEFAULT current_timestamp(),
   `s59` int(11), `s58` int(11), `s57` int(11), `s56` int(11), `s55` int(11), `s54` int(11), `s53` int(11), `s52` int(11), `s51` int(11),
@@ -16,4 +17,3 @@ sendstats.py - sends stats to database, needs table timestats:
   `s10` int(11), `s9` int(11), `s8` int(11), `s7` int(11), `s6` int(11), `s5` int(11), `s4` int(11), `s3` int(11), `s2` int(11), `s1` int(11), `s0` int(11),
   PRIMARY KEY (`id`)
 );
-```
