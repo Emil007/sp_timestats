@@ -9,6 +9,9 @@ A bunch of scripts i cubbled together with big help from chatgpt - pulls als pok
 **sendstats.py** - sends stats to database, needs table timestats:
 
 **stats.py** - runs all of them in order for cronjob
+
+
+To create timestats table
 ```
 CREATE TABLE IF NOT EXISTS `timestats` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
