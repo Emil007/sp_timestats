@@ -26,7 +26,7 @@ query = """
     def_iv, sta_iv, form, level, weather, costume, first_seen_timestamp, changed,
     iv, expire_timestamp_verified, is_ditto, shiny, username, is_event, checked
     FROM pokemon
-    WHERE (checked = 0 OR checked IS NULL) AND expire_timestamp_verified = 1
+    WHERE (checked = 0 OR checked IS NULL) AND expire_timestamp_verified = 1 AND seen_type = "encounter"
 """
 
 # Execute the query
