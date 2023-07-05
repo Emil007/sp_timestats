@@ -26,6 +26,7 @@ for file_path in file_list:
 
     # Check if the table name exists in the instances configuration
     if table_name in instances:
+        instance_name = instances[table_name]
         analyzed_file_path = os.path.join('stats', 'instances', f"analyzed_{table_name}.db")
 
         # Read the data from the file
