@@ -1,5 +1,6 @@
 import mysql.connector
 import configparser
+import os
 
 # Read the database credentials from the config.ini file
 config = configparser.ConfigParser()
@@ -22,11 +23,15 @@ cursor = cnx.cursor()
 
 # Define the MySQL query
 query = """
-    SELECT id, size, expire_timestamp, updated, pokemon_id, gender, cp, atk_iv,
-    def_iv, sta_iv, form, level, weather, costume, first_seen_timestamp, changed,
-    iv, expire_timestamp_verified, is_ditto, shiny, username, is_event, checked
-    FROM pokemon
-    WHERE (checked = 0 OR checked IS NULL) AND expire_timestamp_verified = 1 AND seen_type = "encounter"
+    SELECT p.id, p.size, p.expire_timestamp, p.updated, p.pokemon_id, p.gender, p.cp, p.atk_iv,
+    p.def_iv, p.sta_iv, p.form, p.level, p.weather, p.costume, p.first_seen_timestamp, p.changed,
+    p.iv, p.expire_timestamp_verified, p.is_ditto, p.shiny, p.username, p.is_event, p.checked,
+    d.uuid, d.instance_name
+    FROM pokemon p
+    JOIN device d ON p.username = d.account_username
+    WHERE (p.checked = 0 OR p.checked IS NULL)
+        AND p.expire_timestamp_verified = 1
+        AND p.seen_type = "encounter"
 """
 
 # Execute the query
@@ -39,12 +44,37 @@ rows = cursor.fetchall()
 if rows:
     print(f"Found {len(rows)} rows to download.")
 
-    # Open the check.db file in append mode
-    with open('pkmn.db', 'a') as file:
-        # Process each row
-        for row in rows:
-            # Write the row values to the file separated by tabs
-            file.write('\t'.join(str(value) for value in row) + '\n')
+    # Create the 'stats/instances' directory if it doesn't exist
+    os.makedirs('stats/instances', exist_ok=True)
+
+    # Get the instance configurations from the config.ini file
+    instances = {}
+    for section in config.sections():
+        if section.startswith('instance'):
+            instance_name = config[section]['name']
+            table_name = config[section]['table']
+            instances[instance_name] = table_name
+
+    # Process each row
+    for row in rows:
+        # Get the instance name from the row
+        instance_name = row[-1]
+
+        # Check if the instance exists in the config.ini file
+        if instance_name in instances:
+            # Get the table name for the instance
+            table_name = instances[instance_name]
+
+            # Construct the file path
+            file_path = os.path.join('stats/instances', f"{table_name}.db")
+
+            # Open the instance-specific file in append mode
+            with open(file_path, 'a') as file:
+                # Convert the row values to a tab-separated string
+                row_values = '\t'.join(str(value) for value in row)
+
+                # Write the row values to the file
+                file.write(row_values + '\n')
 
     # Get the IDs of the downloaded rows
     ids = [row[0] for row in rows]

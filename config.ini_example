@@ -3,3 +3,11 @@ user = username
 password = pass
 host = db_host
 database = rdmdb
+
+[instance1]
+name = Poke_East
+table = pokee_stats
+
+#[instance2]
+#name = Poke West
+#table = pokew_stats
